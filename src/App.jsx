@@ -358,6 +358,27 @@ function App() {
   const [currentUser, setCurrentUser] = useState(null);
   const [isAuthOpen, setIsAuthOpen] = useState(false);
   const [authLoading, setAuthLoading] = useState(true);
+  const [showScrollButton, setShowScrollButton] = useState(false);
+
+  // Monitor scroll behavior to show/hide scroll-to-top button
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 300) {
+        setShowScrollButton(true);
+      } else {
+        setShowScrollButton(false);
+      }
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const scrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    });
+  };
 
   // Monitor auth state changes
   useEffect(() => {
@@ -790,6 +811,14 @@ function App() {
         <p className="footer-quote">Smart planning makes every journey unforgettable.</p>
         <p className="footer-copy">&copy; {new Date().getFullYear()} Wanderlust Travel Blog. Designed for the Modern Explorer.</p>
       </footer>
+
+      {showScrollButton && (
+        <button className="scroll-to-top-btn" onClick={scrollToTop} aria-label="Scroll to top">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <polyline points="18 15 12 9 6 15"></polyline>
+          </svg>
+        </button>
+      )}
     </div>
   );
 }
