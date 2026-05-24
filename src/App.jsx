@@ -1,4 +1,12 @@
 import React, { useState, useEffect } from 'react';
+import { 
+  signInWithEmailAndPassword, 
+  createUserWithEmailAndPassword, 
+  signOut, 
+  onAuthStateChanged,
+  updateProfile
+} from 'firebase/auth';
+import { auth, isAuthReady } from './firebase';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 import './index.css';
@@ -191,6 +199,130 @@ const BlogPostModal = ({ post, onClose }) => {
   );
 };
 
+const AuthModal = ({ isOpen, onClose }) => {
+  if (!isOpen) return null;
+  const [isLogin, setIsLogin] = useState(true);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [name, setName] = useState('');
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError('');
+    setLoading(true);
+
+    try {
+      if (isLogin) {
+        await signInWithEmailAndPassword(auth, email, password);
+      } else {
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        await updateProfile(userCredential.user, {
+          displayName: name
+        });
+      }
+      onClose();
+    } catch (err) {
+      console.error(err);
+      let msg = err.message;
+      if (err.code === 'auth/user-not-found' || err.code === 'auth/wrong-password' || err.code === 'auth/invalid-credential') {
+        msg = 'Invalid email or password.';
+      } else if (err.code === 'auth/email-already-in-use') {
+        msg = 'This email is already registered.';
+      } else if (err.code === 'auth/weak-password') {
+        msg = 'Password should be at least 6 characters.';
+      } else if (err.code === 'auth/invalid-email') {
+        msg = 'Please enter a valid email address.';
+      }
+      setError(msg);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="modal-content" onClick={e => e.stopPropagation()} style={{maxWidth: '400px'}}>
+        <button className="modal-close" onClick={onClose} aria-label="Close modal">×</button>
+        <div className="modal-header-simple" style={{padding: '2rem 2rem 0.5rem', textAlign: 'center'}}>
+          <h2 className="modal-title-simple" style={{fontSize: '1.8rem', color: 'var(--accent-gold)', marginBottom: '0.5rem'}}>{isLogin ? 'Welcome Back' : 'Create Account'}</h2>
+          <p style={{color: 'var(--text-muted)', fontSize: '0.9rem'}}>{isLogin ? 'Login to explore the world' : 'Start your journey today'}</p>
+        </div>
+        <div className="modal-body" style={{padding: '1.5rem 2rem 2rem'}}>
+          {error && (
+            <div className="alert alert-danger" style={{background: 'rgba(239, 68, 68, 0.1)', border: '1px solid rgba(239, 68, 68, 0.3)', color: '#ef4444', padding: '0.8rem', borderRadius: '8px', fontSize: '0.9rem', marginBottom: '1rem', textAlign: 'center'}}>
+              {error}
+            </div>
+          )}
+          
+          {!isAuthReady && (
+            <div className="alert alert-warning" style={{background: 'rgba(245, 158, 11, 0.1)', border: '1px solid rgba(245, 158, 11, 0.3)', color: '#f59e0b', padding: '0.8rem', borderRadius: '8px', fontSize: '0.9rem', marginBottom: '1.5rem', textAlign: 'center'}}>
+              ⚠️ Firebase is not configured yet. Set VITE_FIREBASE_* env keys.
+            </div>
+          )}
+
+          <form onSubmit={handleSubmit} style={{display: 'flex', flexDirection: 'column', gap: '1rem'}}>
+            {!isLogin && (
+              <div className="form-group" style={{display: 'flex', flexDirection: 'column', gap: '0.4rem'}}>
+                <label style={{fontSize: '0.85rem', color: 'var(--text-muted)', fontWeight: '600'}}>Full Name</label>
+                <input 
+                  type="text" 
+                  required 
+                  placeholder="John Doe" 
+                  value={name}
+                  onChange={e => setName(e.target.value)}
+                  style={{background: 'var(--bg-darker)', border: '1px solid var(--border-color)', borderRadius: '8px', padding: '0.8rem', color: 'var(--text-main)', outline: 'none', fontSize: '0.95rem'}}
+                />
+              </div>
+            )}
+            <div className="form-group" style={{display: 'flex', flexDirection: 'column', gap: '0.4rem'}}>
+              <label style={{fontSize: '0.85rem', color: 'var(--text-muted)', fontWeight: '600'}}>Email Address</label>
+              <input 
+                type="email" 
+                required 
+                placeholder="your.email@example.com" 
+                value={email}
+                onChange={e => setEmail(e.target.value)}
+                style={{background: 'var(--bg-darker)', border: '1px solid var(--border-color)', borderRadius: '8px', padding: '0.8rem', color: 'var(--text-main)', outline: 'none', fontSize: '0.95rem'}}
+              />
+            </div>
+            <div className="form-group" style={{display: 'flex', flexDirection: 'column', gap: '0.4rem'}}>
+              <label style={{fontSize: '0.85rem', color: 'var(--text-muted)', fontWeight: '600'}}>Password</label>
+              <input 
+                type="password" 
+                required 
+                placeholder="••••••••" 
+                value={password}
+                onChange={e => setPassword(e.target.value)}
+                style={{background: 'var(--bg-darker)', border: '1px solid var(--border-color)', borderRadius: '8px', padding: '0.8rem', color: 'var(--text-main)', outline: 'none', fontSize: '0.95rem'}}
+              />
+            </div>
+            <button 
+              type="submit" 
+              className="btn btn-primary" 
+              disabled={loading || !isAuthReady}
+              style={{marginTop: '0.5rem', padding: '0.9rem', fontSize: '1rem', fontWeight: '600', width: '100%'}}
+            >
+              {loading ? 'Processing...' : (isLogin ? 'Sign In' : 'Sign Up')}
+            </button>
+          </form>
+
+          <div style={{marginTop: '1.5rem', textAlign: 'center', fontSize: '0.9rem', color: 'var(--text-muted)'}}>
+            {isLogin ? "Don't have an account? " : "Already have an account? "}
+            <span 
+              onClick={() => { setIsLogin(!isLogin); setError(''); }}
+              style={{color: 'var(--accent-gold)', cursor: 'pointer', fontWeight: '600'}}
+            >
+              {isLogin ? 'Sign Up Free' : 'Sign In'}
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 function App() {
   const [selectedDest, setSelectedDest] = useState(null);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -200,6 +332,19 @@ function App() {
   const [destinationData, setDestinationData] = useState(fallbackDestinations);
   const [blogPosts, setBlogPosts] = useState(fallbackBlogs);
   const [formMessage, setFormMessage] = useState('');
+
+  const [currentUser, setCurrentUser] = useState(null);
+  const [isAuthOpen, setIsAuthOpen] = useState(false);
+  const [authLoading, setAuthLoading] = useState(true);
+
+  // Monitor auth state changes
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      setCurrentUser(user);
+      setAuthLoading(false);
+    });
+    return unsubscribe;
+  }, []);
 
   // Fetch destinations and blogs from backend API
   useEffect(() => {
@@ -259,6 +404,7 @@ function App() {
       <DestinationModal dest={selectedDest} onClose={() => setSelectedDest(null)} />
       <BlogIntroModal isOpen={isBlogIntroOpen} onClose={() => setIsBlogIntroOpen(false)} />
       <BlogPostModal post={selectedBlogPost} onClose={() => setSelectedBlogPost(null)} />
+      <AuthModal isOpen={isAuthOpen} onClose={() => setIsAuthOpen(false)} />
 
       {/* Hero Wrapper containing Navbar and Hero Content */}
       <div className="hero-wrapper">
@@ -314,7 +460,22 @@ function App() {
               )}
               <button className="icon-btn" aria-label="Search" onClick={toggleSearch}><SearchIcon /></button>
             </div>
-            <button className="btn btn-primary btn-sm sign-in-btn">Sign In</button>
+            {currentUser ? (
+              <div className="user-profile-nav" style={{display: 'flex', alignItems: 'center', gap: '0.8rem'}}>
+                <span className="user-email" style={{fontSize: '0.9rem', color: 'var(--text-muted)', maxWidth: '150px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontWeight: '500'}}>
+                  {currentUser.displayName || currentUser.email}
+                </span>
+                <button 
+                  className="btn btn-outline btn-sm" 
+                  onClick={() => signOut(auth)}
+                  style={{padding: '0.4rem 0.8rem', fontSize: '0.8rem', border: '1px solid var(--border-color)', color: 'var(--text-main)', borderRadius: '6px', background: 'transparent', cursor: 'pointer'}}
+                >
+                  Sign Out
+                </button>
+              </div>
+            ) : (
+              <button className="btn btn-primary btn-sm sign-in-btn" onClick={() => setIsAuthOpen(true)}>Sign In</button>
+            )}
           </div>
         </nav>
 
