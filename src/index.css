@@ -1328,5 +1328,81 @@ a:hover {
   text-align: center;
 }
 
+/* Mobile Responsiveness Styles */
+@media (max-width: 768px) {
+  /* Navbar adjustments */
+  .navbar {
+    padding: 1rem 1.5rem !important;
+  }
+  
+  .nav-links {
+    display: none !important; /* Hide menu links on mobile to prevent squishing */
+  }
+
+  .nav-brand {
+    font-size: 1.25rem !important;
+  }
+
+  /* Hero Section adjustments */
+  .hero {
+    padding: 0 1.5rem !important;
+    justify-content: center;
+    text-align: center;
+  }
+
+  .hero-content {
+    margin-top: -5vh !important;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .hero-title {
+    font-size: 2.5rem !important;
+  }
+
+  .hero-desc {
+    font-size: 0.95rem !important;
+    margin-bottom: 2rem !important;
+  }
+
+  /* Hide absolute overlays on mobile to prevent overlapping */
+  .hero-socials,
+  .watch-journey {
+    display: none !important;
+  }
+
+  /* Section headers */
+  .section {
+    padding: 4rem 0 !important;
+  }
+
+  .section-title {
+    font-size: 2rem !important;
+  }
+
+  /* Newsletter card spacing */
+  .newsletter-card.split-layout {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .newsletter-image {
+    width: 100%;
+    min-height: 250px;
+  }
+
+  .newsletter-card.split-layout .newsletter-content {
+    padding: 2.5rem 1.5rem !important;
+    align-items: center;
+    text-align: center;
+  }
+
+  .newsletter-form-extended {
+    margin: 0 auto 1.5rem;
+    width: 100%;
+  }
+}
+
 
 
