@@ -243,76 +243,98 @@ const AuthModal = ({ isOpen, onClose }) => {
 
   return (
     <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-content" onClick={e => e.stopPropagation()} style={{maxWidth: '400px'}}>
+      <div className="modal-content auth-modal-content" onClick={e => e.stopPropagation()}>
         <button className="modal-close" onClick={onClose} aria-label="Close modal">×</button>
-        <div className="modal-header-simple" style={{padding: '2rem 2rem 0.5rem', textAlign: 'center'}}>
-          <h2 className="modal-title-simple" style={{fontSize: '1.8rem', color: 'var(--accent-gold)', marginBottom: '0.5rem'}}>{isLogin ? 'Welcome Back' : 'Create Account'}</h2>
-          <p style={{color: 'var(--text-muted)', fontSize: '0.9rem'}}>{isLogin ? 'Login to explore the world' : 'Start your journey today'}</p>
+        
+        {/* Premium Tab Selection Header */}
+        <div style={{display: 'flex', borderBottom: '1px solid rgba(255,255,255,0.08)', background: 'rgba(0,0,0,0.2)', padding: '1.5rem 2rem 0'}}>
+          <button 
+            className={`auth-tab-btn ${isLogin ? 'active' : ''}`}
+            onClick={() => { setIsLogin(true); setError(''); }}
+            style={{marginRight: '1.5rem', paddingBottom: '1rem'}}
+          >
+            Sign In
+          </button>
+          <button 
+            className={`auth-tab-btn ${!isLogin ? 'active' : ''}`}
+            onClick={() => { setIsLogin(false); setError(''); }}
+            style={{paddingBottom: '1rem'}}
+          >
+            Register
+          </button>
         </div>
-        <div className="modal-body" style={{padding: '1.5rem 2rem 2rem'}}>
+
+        <div className="modal-body" style={{padding: '2rem'}}>
           {error && (
-            <div className="alert alert-danger" style={{background: 'rgba(239, 68, 68, 0.1)', border: '1px solid rgba(239, 68, 68, 0.3)', color: '#ef4444', padding: '0.8rem', borderRadius: '8px', fontSize: '0.9rem', marginBottom: '1rem', textAlign: 'center'}}>
+            <div className="auth-alert-danger">
               {error}
             </div>
           )}
           
           {!isAuthReady && (
-            <div className="alert alert-warning" style={{background: 'rgba(245, 158, 11, 0.1)', border: '1px solid rgba(245, 158, 11, 0.3)', color: '#f59e0b', padding: '0.8rem', borderRadius: '8px', fontSize: '0.9rem', marginBottom: '1.5rem', textAlign: 'center'}}>
-              ⚠️ Firebase is not configured yet. Set VITE_FIREBASE_* env keys.
+            <div className="auth-alert-warning">
+              ⚠️ Authentication offline. Configure variables in your environment.
             </div>
           )}
 
-          <form onSubmit={handleSubmit} style={{display: 'flex', flexDirection: 'column', gap: '1rem'}}>
+          <p style={{color: 'var(--text-muted)', fontSize: '0.85rem', marginBottom: '1.5rem', textAlign: 'center'}}>
+            {isLogin ? 'Welcome back! Log in to access all travel guides.' : 'Create an account to save your favorite destinations.'}
+          </p>
+
+          <form onSubmit={handleSubmit} style={{display: 'flex', flexDirection: 'column', gap: '1.25rem'}}>
             {!isLogin && (
               <div className="form-group" style={{display: 'flex', flexDirection: 'column', gap: '0.4rem'}}>
-                <label style={{fontSize: '0.85rem', color: 'var(--text-muted)', fontWeight: '600'}}>Full Name</label>
+                <label style={{fontSize: '0.85rem', color: 'var(--text-muted)', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.5px'}}>Full Name</label>
                 <input 
                   type="text" 
                   required 
+                  className="auth-form-input"
                   placeholder="John Doe" 
                   value={name}
                   onChange={e => setName(e.target.value)}
-                  style={{background: 'var(--bg-darker)', border: '1px solid var(--border-color)', borderRadius: '8px', padding: '0.8rem', color: 'var(--text-main)', outline: 'none', fontSize: '0.95rem'}}
                 />
               </div>
             )}
+            
             <div className="form-group" style={{display: 'flex', flexDirection: 'column', gap: '0.4rem'}}>
-              <label style={{fontSize: '0.85rem', color: 'var(--text-muted)', fontWeight: '600'}}>Email Address</label>
+              <label style={{fontSize: '0.85rem', color: 'var(--text-muted)', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.5px'}}>Email Address</label>
               <input 
                 type="email" 
                 required 
+                className="auth-form-input"
                 placeholder="your.email@example.com" 
                 value={email}
                 onChange={e => setEmail(e.target.value)}
-                style={{background: 'var(--bg-darker)', border: '1px solid var(--border-color)', borderRadius: '8px', padding: '0.8rem', color: 'var(--text-main)', outline: 'none', fontSize: '0.95rem'}}
               />
             </div>
+            
             <div className="form-group" style={{display: 'flex', flexDirection: 'column', gap: '0.4rem'}}>
-              <label style={{fontSize: '0.85rem', color: 'var(--text-muted)', fontWeight: '600'}}>Password</label>
+              <label style={{fontSize: '0.85rem', color: 'var(--text-muted)', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.5px'}}>Password</label>
               <input 
                 type="password" 
                 required 
+                className="auth-form-input"
                 placeholder="••••••••" 
                 value={password}
                 onChange={e => setPassword(e.target.value)}
-                style={{background: 'var(--bg-darker)', border: '1px solid var(--border-color)', borderRadius: '8px', padding: '0.8rem', color: 'var(--text-main)', outline: 'none', fontSize: '0.95rem'}}
               />
             </div>
+            
             <button 
               type="submit" 
               className="btn btn-primary" 
-              disabled={loading || !isAuthReady}
+              disabled={loading}
               style={{marginTop: '0.5rem', padding: '0.9rem', fontSize: '1rem', fontWeight: '600', width: '100%'}}
             >
-              {loading ? 'Processing...' : (isLogin ? 'Sign In' : 'Sign Up')}
+              {loading ? 'Connecting...' : (isLogin ? 'Sign In' : 'Get Started')}
             </button>
           </form>
 
-          <div style={{marginTop: '1.5rem', textAlign: 'center', fontSize: '0.9rem', color: 'var(--text-muted)'}}>
+          <div style={{marginTop: '1.75rem', textAlign: 'center', fontSize: '0.85rem', color: 'var(--text-muted)'}}>
             {isLogin ? "Don't have an account? " : "Already have an account? "}
             <span 
               onClick={() => { setIsLogin(!isLogin); setError(''); }}
-              style={{color: 'var(--accent-gold)', cursor: 'pointer', fontWeight: '600'}}
+              style={{color: 'var(--accent-gold)', cursor: 'pointer', fontWeight: '600', textDecoration: 'underline'}}
             >
               {isLogin ? 'Sign Up Free' : 'Sign In'}
             </span>

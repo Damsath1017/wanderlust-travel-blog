@@ -1249,4 +1249,84 @@ a:hover {
   border-top: 1px solid rgba(255,255,255,0.05);
 }
 
+/* Auth Modal Premium Styles */
+.auth-modal-content {
+  background: rgba(15, 15, 15, 0.85) !important;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5) !important;
+  max-width: 420px !important;
+  border-radius: 20px !important;
+  overflow: hidden;
+  padding: 0 !important; /* Reset padding for header */
+}
+
+.auth-form-input {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.03) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-radius: 10px !important;
+  padding: 0.9rem 1rem !important;
+  color: var(--text-main) !important;
+  outline: none !important;
+  font-size: 0.95rem !important;
+  transition: all 0.3s ease !important;
+}
+
+.auth-form-input:focus {
+  border-color: var(--accent-gold) !important;
+  background: rgba(255, 255, 255, 0.05) !important;
+  box-shadow: 0 0 0 3px rgba(232, 195, 104, 0.15) !important;
+}
+
+.auth-tab-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  font-size: 1.1rem;
+  font-weight: 600;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  position: relative;
+  transition: color 0.3s ease;
+}
+
+.auth-tab-btn.active {
+  color: var(--accent-gold);
+}
+
+.auth-tab-btn.active::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background-color: var(--accent-gold);
+}
+
+.auth-alert-danger {
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  color: #ef4444;
+  padding: 0.8rem;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  margin-bottom: 1.2rem;
+  text-align: center;
+}
+
+.auth-alert-warning {
+  background: rgba(245, 158, 11, 0.1);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  color: #f59e0b;
+  padding: 0.8rem;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  margin-bottom: 1.2rem;
+  text-align: center;
+}
+
+
 
